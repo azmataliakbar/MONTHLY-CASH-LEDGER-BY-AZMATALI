@@ -1,65 +1,180 @@
-import Image from "next/image";
+'use client';
+
+import React, { useRef, useState, useMemo, useEffect } from 'react';
+import { LedgerEntry } from '@/types/ledger';
+import { calculateBalances } from '@/lib/calculations';
+import LedgerTable from '@/components/LedgerTable';
+import SummaryCharts from '@/components/SummaryCharts';
+
+const getDefaultEntries = (): LedgerEntry[] => {
+  return Array.from({ length: 30 }, (_, i) => ({
+    id: `entry-${i}`,
+    date: '',
+    description: '',
+    cashIn: 0,
+    cashOut: 0,
+    balance: 0,
+  }));
+};
 
 export default function Home() {
+  const printRef = useRef<HTMLDivElement>(null);
+
+  const [entries, setEntries] = useState<LedgerEntry[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Load data safely
+  useEffect(() => {
+    const loadData = () => {
+      const saved = localStorage.getItem('ledgerEntries');
+      if (saved) {
+        try {
+          setEntries(JSON.parse(saved));
+        } catch {
+          setEntries(getDefaultEntries());
+        }
+      } else {
+        setEntries(getDefaultEntries());
+      }
+      setIsMounted(true);
+    };
+
+    setTimeout(loadData, 0);
+  }, []);
+
+  // Save data
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem('ledgerEntries', JSON.stringify(entries));
+    }
+  }, [entries, isMounted]);
+
+  const calculatedEntries = useMemo(() => {
+    return calculateBalances(entries);
+  }, [entries]);
+
+  const handleUpdate = (
+    id: string,
+    field: keyof Omit<LedgerEntry, 'id' | 'balance'>,
+    value: string | number
+  ) => {
+    setEntries(prev =>
+      prev.map(entry =>
+        entry.id === id ? { ...entry, [field]: value } : entry
+      )
+    );
+  };
+
+  const handleAddEntry = () => {
+    const newEntry: LedgerEntry = {
+      id: `entry-${Date.now()}`,
+      date: '',
+      description: '',
+      cashIn: 0,
+      cashOut: 0,
+      balance: 0,
+    };
+    setEntries(prev => [...prev, newEntry]);
+  };
+
+  const handleClearAll = () => {
+    if (confirm('Are you sure?')) {
+      setEntries(getDefaultEntries());
+    }
+  };
+
+  const handleDownloadPdf = () => {
+    setIsExporting(true);
+
+    const printWindow = window.open('', '', 'width=1200,height=800');
+    if (!printWindow) {
+      alert('Popup blocked. Please allow popups.');
+      setIsExporting(false);
+      return;
+    }
+
+    const content = printRef.current?.innerHTML || '';
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Monthly Cash Ledger</title>
+        <style>
+          body { font-family: Arial; padding: 20px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #666; padding: 8px; }
+          th { background: #f3f4f6; }
+          tr:nth-child(even) { background: #f9fafb; }
+        </style>
+      </head>
+      <body>
+        <h1>Monthly Cash Ledger System</h1>
+        ${content}
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    setTimeout(() => {
+      printWindow.print();
+      setIsExporting(false);
+    }, 300);
+  };
+
+  // Prevent hydration mismatch
+  if (!isMounted) {
+    return <div className="p-4 text-center text-sm sm:text-base">Loading ledger...</div>;
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-gray-100 py-4 px-2 sm:py-6 sm:px-4 md:py-8 md:px-6 lg:px-8">
+      <div className="w-full max-w-[100vw] sm:max-w-7xl mx-auto">
+
+        {/* HEADER */}
+        <div className="flex flex-col sm:flex-row justify-between mb-4 sm:mb-6 gap-3 sm:gap-4">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 leading-tight"
+            style={{ textShadow: '1px 1px 0px #ccc, 2px 2px 0px #ccc, 3px 3px 0px #bbb, 4px 4px 0px #aaa' }}>
+            Monthly Cash Ledger
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <button
+              onClick={handleClearAll}
+              className="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold py-3 px-4 rounded min-h-[44px] w-full sm:w-auto text-sm sm:text-base transition-colors">
+              Clear
+            </button>
+
+            <button
+              onClick={handleDownloadPdf}
+              disabled={isExporting}
+              className="bg-purple-700 hover:bg-purple-800 active:bg-purple-900 text-white font-semibold py-3 px-5 rounded disabled:opacity-50 min-h-[44px] w-full sm:w-auto text-sm sm:text-base transition-colors"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              {isExporting ? 'Preparing PDF...' : 'Download PDF Copy'}
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* CONTENT */}
+        <div ref={printRef} className="space-y-6 sm:space-y-8">
+          <LedgerTable
+            entries={calculatedEntries}
+            onUpdate={handleUpdate}
+            onAdd={handleAddEntry}
+          />
+
+          <SummaryCharts entries={calculatedEntries} />
         </div>
-      </main>
+
+        <div className="mt-6 sm:mt-8 text-center text-purple-600 font-semibold text-xs sm:text-sm md:text-base"
+        style={{ textShadow: '1px 1px 0px #ccc, 2px 2px 0px #ccc, 3px 3px 0px #bbb, 4px 4px 0px #aaa' }}>
+          Designed By : Azmat Ali
+        </div>
+      </div>
     </div>
   );
 }
