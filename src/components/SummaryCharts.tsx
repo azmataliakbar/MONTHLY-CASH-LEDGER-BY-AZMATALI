@@ -24,7 +24,7 @@ const SummaryCharts: React.FC<SummaryChartsProps> = ({ entries }) => {
   ];
 
   if (netBalance > 0) {
-    pieData.push({ name: 'Remaining Balance', value: netBalance, color: '#3b82f6' });
+    pieData.push({ name: ' Balance', value: netBalance, color: '#3b82f6' });
   }
 
   return (
@@ -60,11 +60,21 @@ const SummaryCharts: React.FC<SummaryChartsProps> = ({ entries }) => {
                 data={pieData}
                 cx="50%"
                 cy="50%"
-                labelLine={true}
-                label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(1)}%`}
-                outerRadius="60%"
+                labelLine={false}
+                label={({ x, y, name, percent }) => (
+  <text x={x} y={y} fill="#333" textAnchor="middle" fontSize="12px">
+    <tspan x={x} dy="0.7em">
+      {name}
+    </tspan>
+    <tspan x={x} dy="1.2em">
+      {((percent ?? 0) * 100).toFixed(1)}%
+    </tspan>
+  </text>
+)}
+                outerRadius="70%"
                 fill="#8884d8"
                 dataKey="value"
+                style={{ fontSize: '5px' }}
               >
                 {pieData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
