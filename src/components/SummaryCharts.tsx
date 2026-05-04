@@ -54,23 +54,36 @@ const SummaryCharts: React.FC<SummaryChartsProps> = ({ entries }) => {
           <h3 className="text-lg font-semibold mb-2 text-black"
             style={{ textShadow: '1px 1px 0px #ccc, 2px 2px 0px #ccc, 3px 3px 0px #bbb, 4px 4px 0px #aaa' }}>
             Pie Chart</h3>
-          <ResponsiveContainer width="100%" height={400}>
+          <ResponsiveContainer width="100%" height={400} >
             <PieChart>
               <Pie
                 data={pieData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ x, y, name, percent }) => (
-  <text x={x} y={y} fill="#333" textAnchor="middle" fontSize="12px">
-    <tspan x={x} dy="0.7em">
-      {name}
-    </tspan>
-    <tspan x={x} dy="1.2em">
-      {((percent ?? 0) * 100).toFixed(1)}%
-    </tspan>
-  </text>
-)}
+                label={({ x, y, cx, name, percent }) => {
+  const isLeft = x < cx;
+  const offset = -19; // adjust spacing here
+
+  const newX = isLeft ? x - offset : x + offset;
+
+  return (
+    <text
+      x={newX}
+      y={y}
+      fill="#333"
+      textAnchor={isLeft ? "end" : "start"}
+      fontSize="11.5px"
+    >
+      <tspan x={newX} dy="0.1em">
+        {name}
+      </tspan>
+      <tspan x={newX} dy="1.2em">
+        {((percent ?? 0) * 100).toFixed(1)}%
+      </tspan>
+    </text>
+  );
+}}
                 outerRadius="70%"
                 fill="#8884d8"
                 dataKey="value"

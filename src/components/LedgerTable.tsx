@@ -27,11 +27,11 @@ const LedgerTable: React.FC<LedgerTableProps> = ({ entries, onUpdate, onAdd }) =
   const totalCashOut = entries.reduce((sum, e) => sum + (e.cashOut || 0), 0);
   const netBalance = totalCashIn - totalCashOut;
 
-  const headerStyle = isTiny ? {
-    fontSize: '11px',
-    padding: '6px 8px',
-    fontWeight: 'bold',
-  } : {};
+  // const headerStyle = isTiny ? {
+  //   fontSize: '11px',
+  //   padding: '6px 8px',
+  //   fontWeight: 'bold',
+  // } : {};
 
   const totalsStyle = isTiny ? {
     fontSize: '11px',
