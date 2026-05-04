@@ -70,7 +70,7 @@ const LedgerRow: React.FC<LedgerRowProps> = ({ entry, onUpdate }) => {
           value={entry.cashIn || ''}
           onChange={(e) => handleChange('cashIn', e.target.value)}
           className="w-full border border-gray-300 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-          style={{ ...inputStyle, color: '#22c55e' }}
+          style={{ ...inputStyle, color: '#025c27' }}
           placeholder="0"
           min="0"
         />
@@ -81,12 +81,12 @@ const LedgerRow: React.FC<LedgerRowProps> = ({ entry, onUpdate }) => {
           value={entry.cashOut || ''}
           onChange={(e) => handleChange('cashOut', e.target.value)}
           className="w-full border border-gray-300 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
-          style={{ ...inputStyle, color: '#ef4444' }}
+          style={{ ...inputStyle, color: '#f61212' }}
           placeholder="0"
           min="0"
         />
       </td>
-      <td className="border border-gray-600 font-semibold" style={{ ...baseStyle, color: '#3b82f6' }}>
+      <td className="border border-gray-600 font-semibold" style={{ ...baseStyle, color: '#0c62ee' }}>
         {entry.balance.toFixed(2)}
       </td>
     </tr>

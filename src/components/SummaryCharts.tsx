@@ -44,7 +44,7 @@ const SummaryCharts: React.FC<SummaryChartsProps> = ({ entries }) => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="received" fill="#22c55e" name="Received" stroke="#22c55e" strokeWidth={2} />
+              <Bar dataKey="received" fill="#046b29" name="Received" stroke="#046b29" strokeWidth={2} />
               <Bar dataKey="spent" fill="#ef4444" name="Spent" stroke="#ef4444" strokeWidth={2} />
               <Bar dataKey="balance" fill="#3b82f6" name="Balance" stroke="#3b82f6" strokeWidth={2} />
             </BarChart>
