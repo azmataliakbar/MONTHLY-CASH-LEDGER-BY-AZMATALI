@@ -62,28 +62,28 @@ const SummaryCharts: React.FC<SummaryChartsProps> = ({ entries }) => {
                 cy="50%"
                 labelLine={false}
                 label={({ x, y, cx, name, percent }) => {
-  const isLeft = x < cx;
-  const offset = -19; // adjust spacing here
-
-  const newX = isLeft ? x - offset : x + offset;
-
-  return (
-    <text
-      x={newX}
-      y={y}
-      fill="#333"
-      textAnchor={isLeft ? "end" : "start"}
-      fontSize="11.5px"
-    >
-      <tspan x={newX} dy="0.1em">
-        {name}
-      </tspan>
-      <tspan x={newX} dy="1.2em">
-        {((percent ?? 0) * 100).toFixed(1)}%
-      </tspan>
-    </text>
-  );
-}}
+                  const isLeft = x < cx;
+                  const offset = -19; // adjust spacing here
+                
+                  const newX = isLeft ? x - offset : x + offset;
+                
+                  return (
+                    <text
+                      x={newX}
+                      y={y}
+                      fill="#333"
+                      textAnchor={isLeft ? "end" : "start"}
+                      fontSize="11.5px"
+                    >
+                      <tspan x={newX} dy="0.1em">
+                        {name}
+                      </tspan>
+                      <tspan x={newX} dy="1.2em">
+                        {((percent ?? 0) * 100).toFixed(1)}%
+                      </tspan>
+                    </text>
+                  );
+                }}
                 outerRadius="70%"
                 fill="#8884d8"
                 dataKey="value"
