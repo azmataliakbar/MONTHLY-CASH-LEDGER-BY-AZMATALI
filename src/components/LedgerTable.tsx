@@ -46,20 +46,15 @@ const LedgerTable: React.FC<LedgerTableProps> = ({ entries, onUpdate, onAdd }) =
         <table className="min-w-[600px] sm:min-w-full bg-white border-collapse border border-gray-600">
           <thead>
             <tr className="bg-gray-100">
-              <th className="border border-gray-600 text-left text-gray-800" 
-                 style={{ textShadow: '1px 1px 0px #ccc, 2px 2px 0px #ccc, 3px 3px 0px #bbb, 4px 4px 0px #aaa' }}>
+              <th className="border border-gray-600 text-left text-gray-800">
                 Date</th>
-              <th className="border border-gray-600 text-left text-gray-800" 
-                 style={{ textShadow: '1px 1px 0px #ccc, 2px 2px 0px #ccc, 3px 3px 0px #bbb, 4px 4px 0px #aaa' }}>
+              <th className="border border-gray-600 text-left text-gray-800">
                 Description</th>
-              <th className="border border-gray-600 text-left text-green-600" 
-                 style={{ textShadow: '1px 1px 0px #ccc, 2px 2px 0px #ccc, 3px 3px 0px #bbb, 4px 4px 0px #aaa' }}>
+              <th className="border border-gray-600 text-left text-green-800">
                 Cash In</th>
-              <th className="border border-gray-600 text-left text-red-600" 
-                 style={{ textShadow: '1px 1px 0px #ccc, 2px 2px 0px #ccc, 3px 3px 0px #bbb, 4px 4px 0px #aaa' }}>
+              <th className="border border-gray-600 text-left text-red-800">
                 Cash Out</th>
-              <th className="border border-gray-600 text-left text-blue-600" 
-                 style={{ textShadow: '1px 1px 0px #ccc, 2px 2px 0px #ccc, 3px 3px 0px #bbb, 4px 4px 0px #aaa' }}>
+              <th className="border border-gray-600 text-left text-blue-800">
                 Balance</th>
             </tr>
           </thead>
